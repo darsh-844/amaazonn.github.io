@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon.com. Spend less. Smile more.</title>
+    <link rel="icon" href="https://www.amazon.com/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        amazon: {
+                            dark: '#131921',
+                            light: '#232f3e',
+                            orange: '#febd69',
+                            orangeHover: '#f3a847',
+                            bg: '#e3e6e6',
+                            link: '#007185',
+                            linkHover: '#c7511f',
+                            footer1: '#37475a',
+                            footer2: '#232f3e',
+                            footerDark: '#131a22',
+                            footerHover: '#485769'
+                        }
+                    },
+                    fontFamily: { sans: ['Arial', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Hide scrollbars for horizontal carousels */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .nav-item-hover { border: 1px solid transparent; border-radius: 2px; transition: border 0.1s; }
+        .nav-item-hover:hover { border: 1px solid white; cursor: pointer; }
+    </style>
+</head>
+<body class="bg-amazon-bg overflow-x-hidden text-sm text-gray-800 pb-[60px] md:pb-0 selection:bg-amazon-orange/30">
+
+    <div id="overlay" class="fixed inset-0 bg-black/80 z-[100] hidden opacity-0 transition-opacity duration-300 cursor-pointer"></div>
+    
+    <div id="sidebar" class="fixed top-0 left-0 h-full w-[365px] max-w-[85vw] bg-white z-[101] transform -translate-x-full transition-transform duration-300 overflow-y-auto shadow-xl text-sm">
+        <div class="bg-amazon-light text-white px-8 py-4 flex items-center text-lg font-bold">
+            <i class="fa-solid fa-circle-user text-3xl mr-3"></i> Hello, sign in
+        </div>
+        <div id="closeBtn" class="fixed top-4 -right-12 text-white text-3xl cursor-pointer hidden"><i class="fa-solid fa-xmark"></i></div>
+
+        <div class="py-2 text-gray-800">
+            <h3 class="font-bold text-base px-8 py-3 text-black">Digital Content & Devices</h3>
+            <ul class="pb-2 border-b border-gray-300">
+                <li class="px-8 py-2.5 hover:bg-gray-200 cursor-pointer flex justify-between items-center">Amazon Music <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i></li>
+                <li class="px-8 py-2.5 hover:bg-gray-200 cursor-pointer flex justify-between items-center">Kindle E-readers & Books <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i></li>
+            </ul>
+
+            <h3 class="font-bold text-base px-8 py-3 mt-2 text-black">Shop By Department</h3>
+            <ul class="pb-2 border-b border-gray-300">
+                <li class="px-8 py-2.5 hover:bg-gray-200 cursor-pointer flex justify-between items-center">Electronics <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i></li>
+                <li class="px-8 py-2.5 hover:bg-gray-200 cursor-pointer flex justify-between items-center">Computers <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i></li>
+                
+                <div id="expandedDepartments" class="hidden">
+                    <li class="px-8 py-2.5 hover:bg-gray-200 cursor-pointer flex justify-between items-center">Smart Home <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i></li>
+                    <li class="px-8 py-2.5 hover:bg-gray-200 cursor-pointer flex justify-between items-center">Automotive <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i></li>
+                    <li class="px-8 py-2.5 hover:bg-gray-200 cursor-pointer flex justify-between items-center">Home & Kitchen <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i></li>
+                </div>
+
+                <li id="seeAllBtn" class="px-8 py-2.5 hover:bg-gray-200 cursor-pointer text-amazon-link font-semibold flex items-center">
+                    <span>See All</span> <i class="fa-solid fa-chevron-down ml-2 text-xs transition-transform duration-200" id="seeAllChevron"></i>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <header class="w-full select-none bg-amazon-dark">
+        <div class="hidden md:flex items-center justify-between px-3 py-1.5 min-h-[60px] gap-2 text-white">
+            <div class="flex items-center flex-shrink-0">
+                <div class="nav-item-hover p-2 pt-3 flex items-center h-[50px]">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon Logo" class="w-[95px] h-auto invert object-contain brightness-200">
+                </div>
+                <div class="nav-item-hover p-2 flex items-center h-[50px] ml-1">
+                    <i class="fa-solid fa-location-dot self-end mb-1 text-lg mr-1 text-gray-300"></i>
+                    <div class="leading-tight">
+                        <p class="text-[12px] text-gray-300">Deliver to</p>
+                        <h2 class="text-[14px] font-bold">United States</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-grow flex h-[40px] rounded overflow-visible relative mx-2 min-w-[280px]">
+                <div class="relative h-full flex items-center">
+                    <button id="searchDropdownBtn" class="bg-gray-100 text-gray-700 text-xs h-full px-3 rounded-l border-r border-gray-300 hover:bg-gray-200 flex items-center gap-1 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-amazon-orange">
+                        <span id="currentDept">All</span> <i class="fa-solid fa-caret-down text-[10px] text-gray-500"></i>
+                    </button>
+                    <ul id="searchDeptMenu" class="absolute left-0 top-full mt-1 w-52 bg-white text-black shadow-xl rounded border border-gray-200 text-sm hidden z-50 py-1">
+                        <li class="px-4 py-2 hover:bg-blue-600 hover:text-white cursor-pointer dept-option">All Departments</li>
+                        <li class="px-4 py-2 hover:bg-blue-600 hover:text-white cursor-pointer dept-option">Arts & Crafts</li>
+                        <li class="px-4 py-2 hover:bg-blue-600 hover:text-white cursor-pointer dept-option">Automotive</li>
+                        <li class="px-4 py-2 hover:bg-blue-600 hover:text-white cursor-pointer dept-option">Electronics</li>
+                        <li class="px-4 py-2 hover:bg-blue-600 hover:text-white cursor-pointer dept-option">Home & Kitchen</li>
+                    </ul>
+                </div>
+                <input type="text" placeholder="Search Amazon" class="flex-grow text-black px-3 text-[15px] outline-none focus:ring-2 focus:ring-amazon-orange">
+                <button class="bg-amazon-orange hover:bg-amazon-orangeHover w-[45px] rounded-r text-black text-lg flex items-center justify-center transition-colors focus:outline-none">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </div>
+
+            <div class="flex items-center space-x-1 flex-shrink-0">
+                <div class="nav-item-hover p-2 flex items-center font-bold text-[14px] h-[50px] hidden lg:flex">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg" alt="US Flag" class="w-5 h-3.5 mr-1 object-cover">
+                    EN <i class="fa-solid fa-caret-down text-[10px] text-gray-400 ml-1 mt-1"></i>
+                </div>
+
+                <div class="relative group nav-item-hover p-2 leading-tight h-[50px] flex flex-col justify-center">
+                    <p class="text-[12px] font-normal">Hello, sign in</p>
+                    <h2 class="text-[14px] font-bold flex items-center gap-1">Account & Lists <i class="fa-solid fa-caret-down text-[10px] text-gray-400"></i></h2>
+                    
+                    <div class="hidden group-hover:flex absolute right-0 top-[100%] w-[420px] bg-white text-black shadow-2xl rounded p-5 mt-0 z-[60] border border-gray-200 cursor-default grid grid-cols-2 gap-6">
+                        <div class="border-r border-gray-200 pr-4">
+                            <h3 class="font-bold text-sm text-black mb-2">Your Lists</h3>
+                            <ul class="text-xs text-gray-600 space-y-2">
+                                <li class="hover:text-amazon-linkHover hover:underline cursor-pointer">Create a List</li>
+                                <li class="hover:text-amazon-linkHover hover:underline cursor-pointer">Find a List or Registry</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm text-black mb-2">Your Account</h3>
+                            <ul class="text-xs text-gray-600 space-y-2">
+                                <li class="hover:text-amazon-linkHover hover:underline cursor-pointer">Account Details</li>
+                                <li class="hover:text-amazon-linkHover hover:underline cursor-pointer">Orders & History</li>
+                                <li class="hover:text-amazon-linkHover hover:underline cursor-pointer">Recommendations</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-item-hover p-2 leading-tight h-[50px] flex flex-col justify-center hidden lg:flex">
+                    <p class="text-[12px] font-normal">Returns</p>
+                    <h2 class="text-[14px] font-bold">& Orders</h2>
+                </div>
+
+                <div class="nav-item-hover p-2 flex items-center relative h-[50px]">
+                    <div class="relative flex items-center">
+                        <span class="absolute top-[-8px] left-[14px] text-amazon-orange font-bold text-[15px] bg-transparent rounded-full px-1 text-center w-[20px]">0</span>
+                        <i class="fa-solid fa-cart-shopping text-3xl"></i>
+                    </div>
+                    <span class="text-[14px] font-bold mt-3 ml-1 hidden lg:inline">Cart</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:hidden flex flex-col w-full text-white pb-2 pt-1 px-3">
+            <div class="flex justify-between items-center w-full h-[50px]">
+                <div class="flex items-center gap-2">
+                    <div id="mobileMenuToggle" class="p-2 cursor-pointer text-xl">
+                        <i class="fa-solid fa-bars"></i>
+                    </div>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon Logo" class="w-[85px] h-auto invert object-contain brightness-200 mt-2">
+                </div>
+                <div class="flex items-center gap-4 text-[14px]">
+                    <span class="cursor-pointer">Sign in <i class="fa-solid fa-chevron-right text-[10px]"></i></span>
+                    <div class="relative flex items-center cursor-pointer p-1">
+                        <span class="absolute top-[-6px] left-[12px] text-amazon-orange font-bold text-sm">0</span>
+                        <i class="fa-solid fa-cart-shopping text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full flex h-[40px] rounded overflow-hidden mt-1 bg-white">
+                <input type="text" placeholder="Search Amazon" class="flex-grow text-black px-3 text-[15px] outline-none">
+                <button class="bg-amazon-orange w-[45px] text-black text-lg flex items-center justify-center">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-amazon-light text-white flex items-center px-4 py-1.5 text-[14px] overflow-x-auto hide-scrollbar font-medium">
+            <div id="menuToggle" class="nav-item-hover px-2 py-1 items-center font-bold mr-2 hidden md:flex"><i class="fa-solid fa-bars text-lg mr-1"></i> All</div>
+            <a href="#" class="nav-item-hover px-2 py-1 whitespace-nowrap">Today's Deals</a>
+            <a href="#" class="nav-item-hover px-2 py-1 whitespace-nowrap">Customer Service</a>
+            <a href="#" class="nav-item-hover px-2 py-1 whitespace-nowrap">Registry</a>
+            <a href="#" class="nav-item-hover px-2 py-1 whitespace-nowrap">Gift Cards</a>
+            <a href="#" class="nav-item-hover px-2 py-1 whitespace-nowrap">Sell</a>
+        </div>
+        
+        <div class="md:hidden bg-amazon-footer1 text-white text-xs px-3 py-2.5 flex items-center gap-2">
+            <i class="fa-solid fa-location-dot"></i> Deliver to United States
+        </div>
+    </header>
+
+    <main class="relative max-w-[1500px] mx-auto w-full pb-10">
+        
+        <div class="relative w-full h-[200px] sm:h-[300px] md:h-[600px] bg-cover bg-top bg-no-repeat transition-all" style="background-image: url('https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Fuji/2020/May/Hero/Fuji_TallHero_Computers_1x._CB432469755_.jpg');">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-amazon-bg"></div>
+        </div>
+
+        <div class="relative z-10 px-3 md:px-4 -mt-[80px] sm:-mt-[150px] md:-mt-[360px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+            <div class="bg-white p-4 md:p-5 flex flex-col justify-between shadow-sm rounded-sm">
+                <h2 class="text-xl font-bold text-gray-900 mb-3">Gaming Accessories</h2>
+                <div class="h-[260px] w-full bg-cover bg-center cursor-pointer mb-4" style="background-image: url('https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=400&q=80');"></div>
+                <a href="#" class="text-amazon-link hover:text-amazon-linkHover font-medium text-[13px]">Shop all hardware</a>
+            </div>
+            <div class="bg-white p-4 md:p-5 flex flex-col justify-between shadow-sm rounded-sm">
+                <h2 class="text-xl font-bold text-gray-900 mb-3">Refresh Your Space</h2>
+                <div class="grid grid-cols-2 gap-3 mb-4 h-[260px]">
+                    <div class="flex flex-col"><div class="h-24 w-full bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=200&q=80');"></div><span class="text-[11px] md:text-xs text-gray-600 mt-1">Decor</span></div>
+                    <div class="flex flex-col"><div class="h-24 w-full bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=200&q=80');"></div><span class="text-[11px] md:text-xs text-gray-600 mt-1">Kitchen</span></div>
+                    <div class="flex flex-col"><div class="h-24 w-full bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=200&q=80');"></div><span class="text-[11px] md:text-xs text-gray-600 mt-1">Bedding</span></div>
+                    <div class="flex flex-col"><div class="h-24 w-full bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=200&q=80');"></div><span class="text-[11px] md:text-xs text-gray-600 mt-1">Wellness</span></div>
+                </div>
+                <a href="#" class="text-amazon-link hover:text-amazon-linkHover font-medium text-[13px]">See more categories</a>
+            </div>
+            <div class="bg-white p-4 md:p-5 flex flex-col justify-between shadow-sm rounded-sm">
+                <h2 class="text-xl font-bold text-gray-900 mb-3">Popular Toys Under $30</h2>
+                <div class="h-[260px] w-full bg-cover bg-center cursor-pointer mb-4" style="background-image: url('https://images.unsplash.com/photo-1558060370-d644479cb6f7?auto=format&fit=crop&w=400&q=80');"></div>
+                <a href="#" class="text-amazon-link hover:text-amazon-linkHover font-medium text-[13px]">Shop top sellers</a>
+            </div>
+            <div class="bg-white p-4 md:p-5 flex flex-col justify-between shadow-sm rounded-sm">
+                <div class="pt-1">
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Sign in for the best experience</h2>
+                    <button class="w-full bg-[#ffd814] hover:bg-[#f7ca00] rounded-lg py-2 mt-2 font-medium shadow-sm text-sm border border-[#fcd200]">Sign in securely</button>
+                </div>
+                <div class="h-[150px] w-full bg-cover bg-center mt-4" style="background-image: url('https://images.unsplash.com/photo-1563013544-824ae1d704d3?auto=format&fit=crop&w=400&q=80');"></div>
+            </div>
+        </div>
+
+        <div class="mx-3 md:mx-4 mt-4 md:mt-6 bg-white p-4 md:p-5 shadow-sm rounded-sm">
+            <h2 class="text-[18px] md:text-xl font-bold mb-4 text-gray-900">Top Sellers in Books & Media</h2>
+            <div class="flex space-x-4 md:space-x-6 overflow-x-auto hide-scrollbar scroll-smooth snap-x" id="productCarousel">
+                <div class="min-w-[130px] md:min-w-[150px] w-[130px] md:w-[150px] flex flex-col cursor-pointer group snap-start">
+                    <div class="h-36 md:h-44 w-full bg-cover bg-center rounded mb-2 shadow-sm" style="background-image: url('https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=200&q=80');"></div>
+                    <span class="text-xs md:text-[13px] text-amazon-link group-hover:text-amazon-linkHover font-medium truncate">Strategic Mindset</span>
+                    <div class="flex items-center gap-1 mt-0.5">
+                        <span class="text-xs text-gray-500 line-through">$24.99</span>
+                        <span class="text-sm font-bold text-[#B12704]">$14.95</span>
+                    </div>
+                </div>
+                <div class="min-w-[130px] md:min-w-[150px] w-[130px] md:w-[150px] flex flex-col cursor-pointer group snap-start">
+                    <div class="h-36 md:h-44 w-full bg-cover bg-center rounded mb-2 shadow-sm" style="background-image: url('https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=200&q=80');"></div>
+                    <span class="text-xs md:text-[13px] text-amazon-link group-hover:text-amazon-linkHover font-medium truncate">The Creative Act</span>
+                    <div class="flex items-center gap-1 mt-0.5">
+                        <span class="text-xs text-gray-500 line-through">$30.00</span>
+                        <span class="text-sm font-bold text-[#B12704]">$19.99</span>
+                    </div>
+                </div>
+                <div class="min-w-[130px] md:min-w-[150px] w-[130px] md:w-[150px] flex flex-col cursor-pointer group snap-start">
+                    <div class="h-36 md:h-44 w-full bg-cover bg-center rounded mb-2 shadow-sm" style="background-image: url('https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=200&q=80');"></div>
+                    <span class="text-xs md:text-[13px] text-amazon-link group-hover:text-amazon-linkHover font-medium truncate">Organic Wisdom</span>
+                    <div class="flex items-center gap-1 mt-0.5">
+                        <span class="text-xs text-gray-500 line-through">$18.99</span>
+                        <span class="text-sm font-bold text-[#B12704]">$11.20</span>
+                    </div>
+                </div>
+                <div class="min-w-[130px] md:min-w-[150px] w-[130px] md:w-[150px] flex flex-col cursor-pointer group snap-start">
+                    <div class="h-36 md:h-44 w-full bg-cover bg-center rounded mb-2 shadow-sm" style="background-image: url('https://images.unsplash.com/photo-1495640388908-05fa85288e61?auto=format&fit=crop&w=200&q=80');"></div>
+                    <span class="text-xs md:text-[13px] text-amazon-link group-hover:text-amazon-linkHover font-medium truncate">Design Blueprints</span>
+                    <div class="flex items-center gap-1 mt-0.5">
+                        <span class="text-xs text-gray-500 line-through">$45.00</span>
+                        <span class="text-sm font-bold text-[#B12704]">$27.50</span>
+                    </div>
+                </div>
+                <div class="min-w-[130px] md:min-w-[150px] w-[130px] md:w-[150px] flex flex-col cursor-pointer group snap-start">
+                    <div class="h-36 md:h-44 w-full bg-cover bg-center rounded mb-2 shadow-sm" style="background-image: url('https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=200&q=80');"></div>
+                    <span class="text-xs md:text-[13px] text-amazon-link group-hover:text-amazon-linkHover font-medium truncate">Atomic Habitats</span>
+                    <div class="flex items-center gap-1 mt-0.5">
+                        <span class="text-xs text-gray-500 line-through">$16.00</span>
+                        <span class="text-sm font-bold text-[#B12704]">$9.99</span>
+                    </div>
+                </div>
+                <div class="min-w-[130px] md:min-w-[150px] w-[130px] md:w-[150px] flex flex-col cursor-pointer group snap-start">
+                    <div class="h-36 md:h-44 w-full bg-cover bg-center rounded mb-2 shadow-sm" style="background-image: url('https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=200&q=80');"></div>
+                    <span class="text-xs md:text-[13px] text-amazon-link group-hover:text-amazon-linkHover font-medium truncate">Fictional Horizons</span>
+                    <div class="flex items-center gap-1 mt-0.5">
+                        <span class="text-xs text-gray-500 line-through">$22.95</span>
+                        <span class="text-sm font-bold text-[#B12704]">$13.40</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="w-full text-white">
+        <div id="backToTop" class="bg-amazon-footer1 hover:bg-amazon-footerHover text-center py-3.5 text-[13px] font-medium cursor-pointer transition-colors tracking-wide select-none">
+            Back to top
+        </div>
+
+        <div class="bg-amazon-footer2 border-b border-gray-700/60 hidden sm:block">
+            <div class="max-w-[1000px] mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-[13px]">
+                <div>
+                    <h3 class="font-bold text-white mb-3 tracking-tight">Get to Know Us</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li class="hover:underline cursor-pointer">Careers</li>
+                        <li class="hover:underline cursor-pointer">Blog</li>
+                        <li class="hover:underline cursor-pointer">About Amazon</li>
+                        <li class="hover:underline cursor-pointer">Investor Relations</li>
+                        <li class="hover:underline cursor-pointer">Amazon Devices</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white mb-3 tracking-tight">Make Money with Us</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li class="hover:underline cursor-pointer">Sell products on Amazon</li>
+                        <li class="hover:underline cursor-pointer">Become an Affiliate</li>
+                        <li class="hover:underline cursor-pointer">Advertise Your Products</li>
+                        <li class="hover:underline cursor-pointer">Self-Publish with Us</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white mb-3 tracking-tight">Amazon Payment Products</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li class="hover:underline cursor-pointer">Amazon Business Card</li>
+                        <li class="hover:underline cursor-pointer">Shop with Points</li>
+                        <li class="hover:underline cursor-pointer">Reload Your Balance</li>
+                        <li class="hover:underline cursor-pointer">Amazon Currency Converter</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white mb-3 tracking-tight">Let Us Help You</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li class="hover:underline cursor-pointer">Your Account</li>
+                        <li class="hover:underline cursor-pointer">Your Orders</li>
+                        <li class="hover:underline cursor-pointer">Shipping Rates & Policies</li>
+                        <li class="hover:underline cursor-pointer">Returns & Replacements</li>
+                        <li class="hover:underline cursor-pointer">Help Center</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="max-w-[1000px] mx-auto py-8 border-t border-gray-700/50 flex flex-wrap items-center justify-center gap-6 text-[13px] text-gray-300">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon Footer Logo" class="w-[75px] h-auto invert brightness-200 object-contain mr-4 mt-1">
+                <div class="border border-gray-500 rounded px-3 py-1.5 flex items-center gap-2 cursor-pointer hover:border-gray-300">
+                    <i class="fa-solid fa-globe text-gray-400"></i> <span>English</span> <i class="fa-solid fa-sort text-[9px] ml-4 text-gray-400"></i>
+                </div>
+                <div class="border border-gray-500 rounded px-3 py-1.5 flex items-center gap-1 cursor-pointer hover:border-gray-300">
+                    <span class="text-gray-400 font-bold mr-1">$</span> <span>USD - U.S. Dollar</span>
+                </div>
+                <div class="border border-gray-500 rounded px-3 py-1.5 flex items-center gap-2 cursor-pointer hover:border-gray-300">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg" class="w-4 h-2.5 object-cover"> <span>United States</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-amazon-footerDark py-8 text-[11px] text-gray-400">
+            <div class="max-w-[1000px] mx-auto px-4 grid grid-cols-2 md:grid-cols-7 gap-y-6 gap-x-4 text-left leading-tight hidden md:grid mb-8">
+                <div><h4 class="font-bold text-gray-200 hover:underline cursor-pointer">Amazon Web Services</h4><p class="text-gray-500">Scalable Cloud Computing</p></div>
+                <div><h4 class="font-bold text-gray-200 hover:underline cursor-pointer">Audible</h4><p class="text-gray-500">Listen to Books & Audio</p></div>
+                <div><h4 class="font-bold text-gray-200 hover:underline cursor-pointer">Goodreads</h4><p class="text-gray-500">Book reviews & recommendations</p></div>
+                <div><h4 class="font-bold text-gray-200 hover:underline cursor-pointer">IMDb</h4><p class="text-gray-500">Movies, TV & Celebrities</p></div>
+                <div><h4 class="font-bold text-gray-200 hover:underline cursor-pointer">Shopbop</h4><p class="text-gray-500">Designer Fashion Brands</p></div>
+                <div><h4 class="font-bold text-gray-200 hover:underline cursor-pointer">Amazon Business</h4><p class="text-gray-500">Everything For Your Business</p></div>
+                <div><h4 class="font-bold text-gray-200 hover:underline cursor-pointer">Zappos</h4><p class="text-gray-500">Shoes & Clothing</p></div>
+            </div>
+
+            <div class="flex flex-col items-center justify-center space-y-1">
+                <div class="space-x-4 font-medium text-gray-300 text-[12px]">
+                    <a href="#" class="hover:underline">Conditions of Use</a>
+                    <a href="#" class="hover:underline">Privacy Notice</a>
+                    <a href="#" class="hover:underline">Consumer Health Data</a>
+                </div>
+                <p class="text-gray-500 mt-2">© 1996-2026, Amazon.com, Inc. or its affiliates</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-300 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] z-[90] flex justify-around items-center py-2 text-2xl pb-safe h-[60px]">
+        <div class="flex flex-col items-center justify-center text-amazon-link border-t-2 border-amazon-link w-full h-full pt-1 -mt-2 cursor-pointer">
+            <i class="fa-solid fa-house"></i>
+        </div>
+        <div class="flex flex-col items-center justify-center text-gray-600 w-full h-full cursor-pointer hover:text-amazon-link transition-colors">
+            <i class="fa-regular fa-user"></i>
+        </div>
+        <div class="flex flex-col items-center justify-center text-gray-600 w-full h-full relative cursor-pointer hover:text-amazon-link transition-colors">
+            <span class="absolute top-[2px] right-[26px] bg-white text-amazon-orange font-bold text-xs px-1 rounded-full border border-gray-300">0</span>
+            <i class="fa-solid fa-cart-shopping"></i>
+        </div>
+        <div id="mobileBottomMenuBtn" class="flex flex-col items-center justify-center text-gray-600 w-full h-full cursor-pointer hover:text-amazon-link transition-colors">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </div>
+
+    <script>
+        // 1. BACK TO TOP SMOOTH SCROLL
+        document.getElementById('backToTop').addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // 2. OFF-CANVAS SLIDEOUT TOGGLE LOGIC (Works for both Mobile Header and Bottom App Nav)
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const mobileBottomMenuBtn = document.getElementById('mobileBottomMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const closeBtn = document.getElementById('closeBtn');
+
+        const toggleSidebar = (open) => {
+            if (open) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => { overlay.classList.add('opacity-100'); sidebar.classList.remove('-translate-x-full'); closeBtn.classList.remove('hidden'); }, 10);
+                document.body.classList.add('overflow-hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.remove('opacity-100');
+                closeBtn.classList.add('hidden');
+                setTimeout(() => { overlay.classList.add('hidden'); document.body.classList.remove('overflow-hidden'); }, 300);
+            }
+        };
+        
+        if(menuToggle) menuToggle.addEventListener('click', () => toggleSidebar(true));
+        if(mobileMenuToggle) mobileMenuToggle.addEventListener('click', () => toggleSidebar(true));
+        if(mobileBottomMenuBtn) mobileBottomMenuBtn.addEventListener('click', () => toggleSidebar(true));
+        
+        overlay.addEventListener('click', () => toggleSidebar(false));
+        closeBtn.addEventListener('click', () => toggleSidebar(false));
+
+        // 3. ACCORDION SIDEBAR EXPANSION
+        const seeAllBtn = document.getElementById('seeAllBtn');
+        const expandedDepts = document.getElementById('expandedDepartments');
+        const seeAllChevron = document.getElementById('seeAllChevron');
+
+        seeAllBtn.addEventListener('click', () => {
+            const isHidden = expandedDepts.classList.contains('hidden');
+            if (isHidden) {
+                expandedDepts.classList.remove('hidden');
+                seeAllBtn.querySelector('span').innerText = 'See Less';
+                seeAllChevron.classList.add('rotate-180');
+            } else {
+                expandedDepts.classList.add('hidden');
+                seeAllBtn.querySelector('span').innerText = 'See All';
+                seeAllChevron.classList.remove('rotate-180');
+            }
+        });
+
+        // 4. FUNCTIONAL DROPDOWN FOR CENTRAL DEPARTMENTS INTERACTION
+        const searchDropdownBtn = document.getElementById('searchDropdownBtn');
+        const searchDeptMenu = document.getElementById('searchDeptMenu');
+        const currentDeptText = document.getElementById('currentDept');
+        const deptOptions = document.querySelectorAll('.dept-option');
+
+        if(searchDropdownBtn) {
+            searchDropdownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                searchDeptMenu.classList.toggle('hidden');
+            });
+        }
+
+        deptOptions.forEach(option => {
+            option.addEventListener('click', (e) => {
+                currentDeptText.innerText = e.target.innerText;
+                searchDeptMenu.classList.add('hidden');
+            });
+        });
+
+        document.addEventListener('click', () => {
+            if(searchDeptMenu && !searchDeptMenu.classList.contains('hidden')) {
+                searchDeptMenu.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
